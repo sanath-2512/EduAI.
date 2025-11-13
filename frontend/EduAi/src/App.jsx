@@ -29,7 +29,7 @@ function App() {
     setMessage("Creating account...");
 
     try {
-      const res = await fetch("http://localhost:3000/signup", {
+      const res = await fetch("https://eduai-zy69.onrender.com/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -59,7 +59,7 @@ function App() {
     setMessage("Logging in...");
 
     try {
-      const res = await fetch("http://localhost:3000/login", {
+      const res = await fetch("https://eduai-zy69.onrender.com/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
