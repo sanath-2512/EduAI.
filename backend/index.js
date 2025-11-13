@@ -9,7 +9,7 @@ const app = express();
 const prisma = new PrismaClient();
 
 app.use(cors({
-    origin: "http://localhost:5173", // allow Vite frontend
+    origin: "https://eduai-25.netlify.app/", // allow Vite frontend
     credentials: true,
   }));
   
