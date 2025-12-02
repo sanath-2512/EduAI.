@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const bcrypt = require('bcryptjs'); // Changed from bcrypt to bcryptjs as per install
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
@@ -14,12 +14,10 @@ exports.register = async (req, res) => {
     user = new User({ username, email, password: hashedPassword });
     await user.save();
 
-    const payload = { userId: user.id };
-    const token = jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' });
-
-    res.status(201).json({ token, user: { id: user.id, username: user.username, email: user.email } });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(201).json({ token, user: { id: user._id, username, email } });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -32,12 +30,10 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    const payload = { userId: user.id };
-    const token = jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' });
-
-    res.json({ token, user: { id: user.id, username: user.username, email: user.email } });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.json({ token, user: { id: user._id, username: user.username, email: user.email } });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -45,6 +41,39 @@ exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select('-password');
     res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { username, email } = req.body;
+    const user = await User.findById(req.user.userId);
+    
+    if (username) user.username = username;
+    if (email) user.email = email;
+    
+    await user.save();
+    res.json({ message: 'Profile updated', user: { id: user._id, username: user.username, email: user.email } });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user.userId);
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) return res.status(400).json({ message: 'Incorrect current password' });
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    
+    await user.save();
+    res.json({ message: 'Password changed successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }

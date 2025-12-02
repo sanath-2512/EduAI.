@@ -207,6 +207,57 @@ select {
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -223,4 +274,68 @@ select {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Ensure proper layout */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Fix for flex utilities */
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+/* Ensure cards don't overflow */
+.card {
+  overflow: visible;
+  word-wrap: break-word;
+}
+
+/* Fix for course header */
+.course-header {
+  word-wrap: break-word;
+}
+
+/* Ensure buttons are properly styled */
+.btn {
+  white-space: nowrap;
+}
+
+/* Fix for grid layouts */
+.grid {
+  display: grid;
+}
+
+/* Ensure proper spacing */
+.space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.list-disc {
+  list-style-type: disc;
+}
+
+.pl-4 {
+  padding-left: 1rem;
+}
+
+.pl-6 {
+  padding-left: 1.5rem;
 }

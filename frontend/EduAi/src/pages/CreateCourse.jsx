@@ -15,11 +15,25 @@ const CreateCourse = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      console.log('Creating course with:', { title, description, topic, useAI });
       const res = await api.post('/courses', { title, description, topic, useAI });
-      navigate(`/course/${res.data._id}`);
+      console.log('Course created:', res.data);
+      console.log('Course content:', {
+        hasContent: !!res.data.content,
+        contentLength: res.data.content?.length,
+        modules: res.data.content?.map(m => ({ title: m.moduleTitle || m.title, lessons: m.lessons?.length }))
+      });
+      
+      if (res.data._id) {
+        navigate(`/course/${res.data._id}`);
+      } else {
+        alert('Course created but no ID returned. Please check your courses.');
+        navigate('/dashboard');
+      }
     } catch (err) {
-      console.error(err);
-      alert('Failed to create course');
+      console.error('Error creating course:', err);
+      const errorMsg = err.response?.data?.message || err.message || 'Failed to create course';
+      alert(`Failed to create course: ${errorMsg}`);
     } finally {
       setLoading(false);
     }

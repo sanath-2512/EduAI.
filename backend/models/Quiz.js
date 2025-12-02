@@ -6,7 +6,8 @@ const quizSchema = new mongoose.Schema({
   questions: [{
     question: String,
     options: [String],
-    correctAnswer: String, // or index
+    correctAnswer: String,
+    explanation: String // Why the answer is correct
   }],
   createdAt: { type: Date, default: Date.now },
 });
