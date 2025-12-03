@@ -6,7 +6,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import CreateCourse from './pages/CreateCourse';
-// import CourseDetails from './pages/CourseDetails';
+import CourseDetails from './pages/CourseDetails';
 import TakeQuiz from './pages/TakeQuiz';
 import Quizzes from './pages/Quizzes';
 import Profile from './pages/Profile';
@@ -37,7 +37,7 @@ const AppContent = () => {
             <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/create-course" element={<ProtectedRoute><CreateCourse /></ProtectedRoute>} />
-            {/* <Route path="/course/:id" element={<ProtectedRoute><CourseDetails /></ProtectedRoute>} /> */}
+            <Route path="/course/:id" element={<ProtectedRoute><CourseDetails /></ProtectedRoute>} />
             <Route path="/quizzes" element={<ProtectedRoute><Quizzes /></ProtectedRoute>} />
             <Route path="/quiz/:id" element={<ProtectedRoute><TakeQuiz /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
