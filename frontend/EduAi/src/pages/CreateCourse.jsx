@@ -20,19 +20,33 @@ const CreateCourse = () => {
       console.log('Course created:', res.data);
       console.log('Course content:', {
         hasContent: !!res.data.content,
-        contentLength: res.data.content?.length,
-        modules: res.data.content?.map(m => ({ title: m.moduleTitle || m.title, lessons: m.lessons?.length }))
+        modulesCount: res.data.content?.modules?.length,
+        modules: res.data.content?.modules?.map(m => ({ title: m.moduleTitle || m.title, lessons: m.lessons?.length }))
       });
       
-      if (res.data._id) {
-        navigate(`/course/${res.data._id}`);
+      const courseId = res.data.id || res.data._id;
+      if (courseId) {
+        navigate(`/course/${courseId}`);
       } else {
         alert('Course created but no ID returned. Please check your courses.');
         navigate('/dashboard');
       }
     } catch (err) {
       console.error('Error creating course:', err);
-      const errorMsg = err.response?.data?.message || err.message || 'Failed to create course';
+      let errorMsg = 'Failed to create course';
+      
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        errorMsg = `Server Error (${err.response.status}): ${err.response.data?.message || err.response.statusText}`;
+      } else if (err.request) {
+        // The request was made but no response was received
+        errorMsg = 'No response from server. Please check if backend is running.';
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        errorMsg = err.message;
+      }
+      
       alert(`Failed to create course: ${errorMsg}`);
     } finally {
       setLoading(false);

@@ -386,88 +386,240 @@ const generateQuiz = async (topic, modules = []) => {
   }
 };
 
-// --- Fallback Functions (Keep these just in case) ---
+// --- Fallback Functions (Better content for offline mode) ---
 
 function createDefaultCourse(topic) {
   return {
-    title: `Mastering ${topic} (Offline Mode)`,
-    description: `A comprehensive guide to ${topic}. (Generated in offline mode due to connection issues)`,
-    learningOutcomes: ["Understand core concepts", "Apply knowledge", "Build projects"],
-    estimatedDuration: "4 weeks",
-    estimatedLearningHours: 20,
+    title: `Introduction to ${topic}`,
+    description: `Learn the fundamentals of ${topic}. Note: This is a basic template course. For full AI-generated content with comprehensive modules, examples, and exercises, please try again when the AI service is available.`,
+    learningOutcomes: [
+      `Understand the core concepts of ${topic}`,
+      `Learn practical applications and use cases`,
+      `Build foundational knowledge for advanced topics`,
+      `Practice with hands-on examples`
+    ],
+    estimatedDuration: "2-3 weeks",
+    estimatedLearningHours: 15,
     modules: [
       {
-        moduleTitle: "Introduction",
+        moduleTitle: `Getting Started with ${topic}`,
         level: "Beginner",
-        moduleOverview: "Basics of the topic.",
-        estimatedHours: 5,
+        moduleOverview: `This module introduces you to the fundamental concepts of ${topic}. You'll learn what it is, why it matters, and how to get started.`,
+        estimatedHours: 3,
         lessons: [
           {
-            lessonTitle: "Overview",
-            beginnerExplanation: `${topic} is a fundamental concept that...`,
-            deepTheory: `## Deep Dive into ${topic}\n\nUnderstanding ${topic} requires...`,
+            lessonTitle: `What is ${topic}?`,
+            beginnerExplanation: `${topic} is an important concept in its field. Think of it like learning a new skill - you start with the basics and build up from there.\n\nImagine you're learning to cook. ${topic} is like understanding the basic ingredients and cooking techniques before you make complex dishes. You need to know what each component does and how they work together.\n\nIn simple terms, ${topic} helps solve real-world problems by providing a structured approach to handling specific challenges. Whether you're a student, professional, or enthusiast, understanding ${topic} opens up new possibilities.`,
+            deepTheory: `## Understanding ${topic} in Depth\n\n${topic} is built on several core principles:\n\n### Key Concepts\n- **Foundation**: The basic building blocks that make ${topic} work\n- **Structure**: How different components are organized\n- **Function**: What ${topic} actually does and accomplishes\n- **Application**: Where and how ${topic} is used in practice\n\n### Why ${topic} Matters\n${topic} is widely used because it provides efficient solutions to common problems. Industries rely on it for improving workflows, increasing productivity, and achieving better results.\n\n### Real-World Impact\nCompanies and individuals use ${topic} daily to:\n1. Streamline processes\n2. Reduce complexity\n3. Improve outcomes\n4. Scale operations`,
             practicalExamples: [
               {
                 title: "Basic Example",
-                description: "A simple example to get started",
-                commonMistakes: "Common mistakes include...",
-                correction: "To avoid this, remember to..."
+                description: `Let's say you want to apply ${topic} to a simple project. You would start by identifying the problem, understanding the requirements, and then implementing a solution step by step.`,
+                commonMistakes: `Beginners often try to rush through learning ${topic} without understanding the fundamentals. This leads to confusion later.`,
+                correction: `Take time to understand each concept thoroughly before moving to the next. Practice with simple examples first.`
+              },
+              {
+                title: "Practical Application",
+                description: `In a real scenario, ${topic} can be applied to everyday tasks. For example, organizing information, solving problems systematically, or automating repetitive work.`,
+                commonMistakes: `Trying to use advanced techniques without mastering basics.`,
+                correction: `Follow a learning path: basics → intermediate → advanced. Build a strong foundation.`
               }
             ],
             handsOnExercises: [
               {
-                exercise: "What is the basic concept of " + topic + "?",
+                exercise: `Research and list 3 real-world applications of ${topic} in your field of interest.`,
                 difficulty: "Easy",
-                solution: "The basic concept is..."
+                solution: `Look for case studies, articles, or examples online. Document how ${topic} is being used and what problems it solves.`
+              },
+              {
+                exercise: `Identify a simple problem that could be solved using ${topic}. Outline the steps you would take.`,
+                difficulty: "Medium",
+                solution: `Break down the problem into smaller parts. Map each part to concepts you've learned about ${topic}.`
               }
             ],
             caseStudy: {
-              title: "Real-World Application",
-              scenario: "In a real-world scenario...",
-              steps: ["Step 1", "Step 2"],
-              outcome: "Expected outcome"
+              title: `Real-World Use of ${topic}`,
+              scenario: `Consider a scenario where a team needs to implement ${topic} to solve a business challenge. They need to improve efficiency and reduce errors.`,
+              steps: [
+                "Analyze the current situation and identify pain points",
+                "Research how ${topic} can address these issues", 
+                "Plan the implementation strategy",
+                "Execute in phases with testing",
+                "Measure results and optimize"
+              ],
+              outcome: `By applying ${topic} correctly, the team achieves significant improvements in their workflow and productivity.`
             },
             chapterQuiz: {
               questions: [
                 {
-                  question: `What is ${topic}?`,
-                  options: ["Option A", "Option B", "Option C", "Option D"],
-                  correctAnswer: "Option A",
-                  explanation: "This is correct because..."
+                  question: `What is the main purpose of ${topic}?`,
+                  options: [
+                    "To make complex problems manageable",
+                    "To replace human thinking",
+                    "To create more work",
+                    "None of the above"
+                  ],
+                  correctAnswer: "To make complex problems manageable",
+                  explanation: `${topic} is designed to help break down and solve complex challenges in a structured way.`
+                },
+                {
+                  question: `Which is the best approach when learning ${topic}?`,
+                  options: [
+                    "Jump straight to advanced topics",
+                    "Start with fundamentals and build up",
+                    "Skip theory and only do practice",
+                    "Memorize without understanding"
+                  ],
+                  correctAnswer: "Start with fundamentals and build up",
+                  explanation: "Building a strong foundation is crucial for mastering any topic."
                 }
               ]
             },
-            estimatedHours: 2
+            estimatedHours: 3
+          }
+        ]
+      },
+      {
+        moduleTitle: `Practical Applications of ${topic}`,
+        level: "Intermediate",
+        moduleOverview: `Learn how to apply ${topic} in real-world scenarios with hands-on examples and projects.`,
+        estimatedHours: 4,
+        lessons: [
+          {
+            lessonTitle: `Applying ${topic} in Practice`,
+            beginnerExplanation: `Now that you understand what ${topic} is, let's see how to actually use it. Think of this like moving from theory to practice - like going from reading a recipe to actually cooking.\n\nThe key is to start small, practice regularly, and gradually take on more complex challenges. Every expert was once a beginner who kept practicing.`,
+            deepTheory: `## Practical Implementation of ${topic}\n\n### Step-by-Step Approach\n1. **Identify the use case**: Understand what you're trying to achieve\n2. **Gather resources**: Collect the tools and information you need\n3. **Plan your approach**: Create a roadmap for implementation\n4. **Execute systematically**: Follow your plan and document progress\n5. **Test and refine**: Verify your work and make improvements\n\n### Best Practices\n- Always start with clear objectives\n- Document your process\n- Learn from mistakes\n- Seek feedback from others\n- Stay updated with new developments`,
+            practicalExamples: [
+              {
+                title: "Building a Project",
+                description: `When building a project using ${topic}, break it into manageable phases. Complete each phase before moving to the next.`,
+                commonMistakes: `Trying to do everything at once leads to overwhelm and errors.`,
+                correction: `Use an iterative approach - build, test, improve, repeat.`
+              }
+            ],
+            handsOnExercises: [
+              {
+                exercise: `Create a simple project plan for applying ${topic} to a problem in your domain.`,
+                difficulty: "Medium",
+                solution: `Outline: 1) Problem statement, 2) How ${topic} helps, 3) Implementation steps, 4) Success criteria`
+              },
+              {
+                exercise: `Find a case study of ${topic} being used successfully and analyze what made it work.`,
+                difficulty: "Medium",
+                solution: `Look for key success factors: clear goals, proper planning, skilled execution, and continuous improvement.`
+              }
+            ],
+            caseStudy: {
+              title: `Successful Implementation`,
+              scenario: `A professional applies ${topic} to streamline their workflow and achieves measurable improvements.`,
+              steps: [
+                "Identified inefficiencies in current process",
+                "Mapped how ${topic} could help",
+                "Implemented changes incrementally",
+                "Monitored results and adjusted",
+                "Scaled successful practices"
+              ],
+              outcome: `Productivity increased by applying ${topic} principles systematically.`
+            },
+            chapterQuiz: {
+              questions: [
+                {
+                  question: `What's the most important factor when applying ${topic}?`,
+                  options: [
+                    "Having expensive tools",
+                    "Clear understanding of objectives",
+                    "Working alone",
+                    "Rushing through implementation"
+                  ],
+                  correctAnswer: "Clear understanding of objectives",
+                  explanation: "Knowing what you want to achieve guides all your decisions and actions."
+                }
+              ]
+            },
+            estimatedHours: 4
           }
         ]
       }
     ],
     projects: {
       miniProject: {
-        title: "Mini Project",
-        description: "A small project to practice",
-        requirements: ["Requirement 1"],
-        sampleSolution: "Sample solution",
-        improvementIdeas: ["Idea 1"]
+        title: `${topic} Mini Challenge`,
+        description: `Apply what you've learned to solve a practical problem using ${topic}. This hands-on project will reinforce your understanding.`,
+        requirements: [
+          "Identify a real problem or use case",
+          `Apply ${topic} concepts to address it`,
+          "Document your approach and solution",
+          "Reflect on what you learned"
+        ],
+        sampleSolution: `Choose a problem relevant to your interests. Research how ${topic} is used in that context. Create a plan and implement it step by step. Test your solution and iterate based on results.`,
+        improvementIdeas: [
+          "Add more complexity gradually",
+          "Collaborate with others for feedback",
+          "Document lessons learned for future reference"
+        ]
       },
       finalProject: {
-        title: "Final Project",
-        description: "A comprehensive project",
-        requirements: ["Requirement 1"],
-        sampleSolution: "Sample solution",
-        improvementIdeas: ["Idea 1"]
+        title: `${topic} Capstone Project`,
+        description: `Demonstrate mastery by completing a comprehensive project that showcases your understanding of ${topic}.`,
+        requirements: [
+          `Deep application of ${topic} principles`,
+          "Well-documented process",
+          "Clear results and outcomes",
+          "Presentation of learnings"
+        ],
+        sampleSolution: `Design a complete solution that leverages ${topic}. Include planning, implementation, testing, and documentation. Present your work to others.`,
+        improvementIdeas: [
+          "Get peer review",
+          "Present to a broader audience",
+          "Publish your findings or code"
+        ]
       }
     },
-    revisionNotes: `## Revision Notes for ${topic}\n\nKey points:\n- Point 1\n- Point 2`,
+    revisionNotes: `## ${topic} - Key Takeaways\n\n### Core Concepts\n- ${topic} provides structured approaches to solving problems\n- Understanding fundamentals is crucial before advancing\n- Practice and application reinforce learning\n\n### Best Practices\n- Start simple and build complexity gradually\n- Document your learning journey\n- Apply concepts to real-world scenarios\n- Seek feedback and iterate\n\n### Next Steps\n- Continue practicing with diverse examples\n- Explore advanced topics\n- Join communities of practice\n- Share your knowledge with others\n\n**Note**: For comprehensive AI-generated content with detailed examples, exercises, and industry-specific case studies, please try again when the AI service becomes available.`,
     finalAssessment: {
       questions: [
         {
-          question: `What is ${topic}?`,
-          options: ["Option A", "Option B", "Option C", "Option D"],
-          correctAnswer: "Option A",
-          explanation: "Explanation"
+          question: `What is the most effective way to learn ${topic}?`,
+          options: [
+            "Rushing through all material quickly",
+            "Understanding basics, then practicing regularly",
+            "Only reading without practice",
+            "Skipping fundamentals"
+          ],
+          correctAnswer: "Understanding basics, then practicing regularly",
+          explanation: "Combining theoretical understanding with consistent practice is the most effective learning approach."
+        },
+        {
+          question: `When applying ${topic}, you should:`,
+          options: [
+            "Start with the most complex problems",
+            "Begin with simple applications and build up",
+            "Work without a plan",
+            "Avoid documenting your process"
+          ],
+          correctAnswer: "Begin with simple applications and build up",
+          explanation: "Progressive learning - starting simple and advancing gradually - builds solid expertise."
+        },
+        {
+          question: `Why is ${topic} valuable?`,
+          options: [
+            "It makes work more complicated",
+            "It provides structured solutions to challenges",
+            "It replaces the need for thinking",
+            "It's only for experts"
+          ],
+          correctAnswer: "It provides structured solutions to challenges",
+          explanation: `${topic} offers systematic approaches to solving real-world problems effectively.`
         }
       ]
+    },
+    resources: {
+      youtubePlaylists: [],
+      recommendedBooks: [],
+      articles: [],
+      documentation: [],
+      tools: [],
+      courses: []
     }
   };
 }

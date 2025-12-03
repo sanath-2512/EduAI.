@@ -1,6 +1,7 @@
-const Course = require('../models/Course');
-const Quiz = require('../models/Quiz');
+const { PrismaClient } = require('@prisma/client');
 const { generateCourseContent, generateQuiz } = require('../utils/ai');
+
+const prisma = new PrismaClient();
 
 exports.createCourse = async (req, res) => {
   try {
@@ -8,8 +9,9 @@ exports.createCourse = async (req, res) => {
     let courseData = {
       title,
       description,
-      instructor: req.user.userId,
-      content: []
+      topic: topic || title,
+      userId: req.user.userId,
+      content: {}
     };
 
     if (useAI && topic) {
@@ -29,20 +31,15 @@ exports.createCourse = async (req, res) => {
       
       courseData.title = aiContent.title || title || `Course on ${topic}`;
       courseData.description = aiContent.description || description || `Learn ${topic}`;
-      courseData.content = aiContent.modules || [];
-      courseData.learningOutcomes = aiContent.learningOutcomes || [];
-      courseData.estimatedDuration = aiContent.estimatedDuration || "Flexible";
-      courseData.estimatedLearningHours = aiContent.estimatedLearningHours || 0;
-      courseData.projects = aiContent.projects || {};
-      courseData.revisionNotes = aiContent.revisionNotes || "";
-      courseData.finalAssessment = aiContent.finalAssessment || { questions: [] };
-      courseData.resources = aiContent.resources || {};
-      courseData.generatedByAI = true;
+      courseData.content = aiContent; // Store entire AI response as JSON
       
-      console.log(`💾 Saving course with ${courseData.content.length} modules...`);
-      const course = new Course(courseData);
-      await course.save();
-      console.log(`✅ Course saved successfully: ${course._id}`);
+      console.log(`💾 Saving course with ${aiContent.modules.length} modules...`);
+      
+      const course = await prisma.course.create({
+        data: courseData
+      });
+      
+      console.log(`✅ Course saved successfully: ${course.id}`);
       
       try {
         // Create comprehensive quiz from course content
@@ -66,166 +63,223 @@ exports.createCourse = async (req, res) => {
           allQuestions = allQuestions.concat(aiContent.finalAssessment.questions);
         }
         
-        // If we have questions, create quiz, otherwise generate one
+        // If we have questions, create quiz
         if (allQuestions.length > 0) {
-          const quiz = new Quiz({
-            courseId: course._id,
-            title: `${course.title} - Comprehensive Quiz`,
-            questions: allQuestions
+          await prisma.quiz.create({
+            data: {
+              topic: `${course.title} - Comprehensive Quiz`,
+              questions: allQuestions,
+              userId: req.user.userId
+            }
           });
-          await quiz.save();
         } else {
           // Generate quiz if no questions in course
           const quizData = await generateQuiz(topic, aiContent.modules);
-          const quiz = new Quiz({
-            courseId: course._id,
-            title: quizData.title || `${topic} Quiz`,
-            questions: quizData.questions || []
+          await prisma.quiz.create({
+            data: {
+              topic: quizData.title || `${topic} Quiz`,
+              questions: quizData.questions || [],
+              userId: req.user.userId
+            }
           });
-          await quiz.save();
         }
       } catch (quizError) {
         console.error('Error auto-generating quiz:', quizError);
       }
       
-      return res.status(201).json(course);
+      // Add _id for frontend compatibility
+      const courseResponse = { ...course, _id: course.id };
+      return res.status(201).json(courseResponse);
     }
 
-    const course = new Course(courseData);
-    await course.save();
-    res.status(201).json(course);
+    const course = await prisma.course.create({
+      data: courseData
+    });
+    
+    const courseResponse = { ...course, _id: course.id };
+    res.status(201).json(courseResponse);
   } catch (err) {
     console.error('Error in createCourse:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
-// Update Course (Full CRUD)
-exports.updateCourse = async (req, res) => {
-  try {
-    const { title, description } = req.body;
-    const course = await Course.findById(req.params.id);
-    
-    if (!course) return res.status(404).json({ message: 'Course not found' });
-    if (course.instructor.toString() !== req.user.userId) {
-      return res.status(401).json({ message: 'Not authorized' });
-    }
-
-    if (title) course.title = title;
-    if (description) course.description = description;
-    
-    await course.save();
-    res.json(course);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
-// Get User's Courses with Search, Filter, Sort, Pagination
+// Get User's Courses
 exports.getCourses = async (req, res) => {
   try {
-    const { search, sort, page = 1, limit = 10, generatedByAI } = req.query;
-    const query = { instructor: req.user.userId };
-
-    // Searching
+    const { search, sort, page = 1, limit = 10 } = req.query;
+    const skip = (page - 1) * limit;
+    
+    const where = { userId: req.user.userId };
+    
+    // Search filter
     if (search) {
-      query.title = { $regex: search, $options: 'i' };
-    }
-
-    // Filtering
-    if (generatedByAI) {
-      query.generatedByAI = generatedByAI === 'true';
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { topic: { contains: search, mode: 'insensitive' } }
+      ];
     }
 
     // Sorting
-    let sortOption = { createdAt: -1 }; // Default: newest first
-    if (sort === 'oldest') sortOption = { createdAt: 1 };
-    if (sort === 'title') sortOption = { title: 1 };
+    let orderBy = { createdAt: 'desc' }; // Default: newest first
+    if (sort === 'oldest') orderBy = { createdAt: 'asc' };
+    if (sort === 'title') orderBy = { title: 'asc' };
 
-    // Pagination
-    const skip = (page - 1) * limit;
+    const [courses, total] = await Promise.all([
+      prisma.course.findMany({
+        where,
+        include: {
+          user: {
+            select: { id: true, username: true, email: true }
+          }
+        },
+        orderBy,
+        skip: parseInt(skip),
+        take: parseInt(limit)
+      }),
+      prisma.course.count({ where })
+    ]);
 
-    const courses = await Course.find(query)
-      .populate('instructor', 'username')
-      .sort(sortOption)
-      .skip(skip)
-      .limit(parseInt(limit));
-
-    const total = await Course.countDocuments(query);
+    // Add _id for frontend compatibility
+    const coursesWithId = courses.map(c => ({ ...c, _id: c.id }));
 
     res.json({
-      courses,
+      courses: coursesWithId,
       totalPages: Math.ceil(total / limit),
       currentPage: parseInt(page),
       totalCourses: total
     });
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Get courses error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
-// Get All Public Courses with Search, Filter, Sort, Pagination
+// Get All Public Courses
 exports.getAllCourses = async (req, res) => {
   try {
-    const { search, sort, page = 1, limit = 10, generatedByAI } = req.query;
-    const query = {};
-
-    if (search) {
-      query.title = { $regex: search, $options: 'i' };
-    }
-
-    if (generatedByAI) {
-      query.generatedByAI = generatedByAI === 'true';
-    }
-
-    let sortOption = { createdAt: -1 };
-    if (sort === 'oldest') sortOption = { createdAt: 1 };
-    if (sort === 'title') sortOption = { title: 1 };
-
+    const { search, sort, page = 1, limit = 10 } = req.query;
     const skip = (page - 1) * limit;
+    
+    const where = {};
+    
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { topic: { contains: search, mode: 'insensitive' } }
+      ];
+    }
 
-    const courses = await Course.find(query)
-      .populate('instructor', 'username')
-      .sort(sortOption)
-      .skip(skip)
-      .limit(parseInt(limit));
+    let orderBy = { createdAt: 'desc' };
+    if (sort === 'oldest') orderBy = { createdAt: 'asc' };
+    if (sort === 'title') orderBy = { title: 'asc' };
 
-    const total = await Course.countDocuments(query);
+    const [courses, total] = await Promise.all([
+      prisma.course.findMany({
+        where,
+        include: {
+          user: {
+            select: { id: true, username: true, email: true }
+          }
+        },
+        orderBy,
+        skip: parseInt(skip),
+        take: parseInt(limit)
+      }),
+      prisma.course.count({ where })
+    ]);
+
+    // Add _id for frontend compatibility
+    const coursesWithId = courses.map(c => ({ ...c, _id: c.id }));
 
     res.json({
-      courses,
+      courses: coursesWithId,
       totalPages: Math.ceil(total / limit),
       currentPage: parseInt(page),
       totalCourses: total
     });
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Get all courses error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
 exports.getCourseById = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id).populate('instructor', 'username');
+    const course = await prisma.course.findUnique({
+      where: { id: req.params.id },
+      include: {
+        user: {
+          select: { id: true, username: true, email: true }
+        }
+      }
+    });
+    
     if (!course) return res.status(404).json({ message: 'Course not found' });
-    res.json(course);
+    
+    // Add _id for frontend compatibility
+    const courseResponse = { ...course, _id: course.id };
+    res.json(courseResponse);
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Get course by ID error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.updateCourse = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    
+    // Check if course exists and belongs to user
+    const course = await prisma.course.findUnique({
+      where: { id: req.params.id }
+    });
+    
+    if (!course) return res.status(404).json({ message: 'Course not found' });
+    if (course.userId !== req.user.userId) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    const updateData = {};
+    if (title) updateData.title = title;
+    if (description) updateData.description = description;
+    
+    const updatedCourse = await prisma.course.update({
+      where: { id: req.params.id },
+      data: updateData
+    });
+    
+    res.json(updatedCourse);
+  } catch (err) {
+    console.error('Update course error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
 exports.deleteCourse = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id);
+    const course = await prisma.course.findUnique({
+      where: { id: req.params.id }
+    });
+    
     if (!course) return res.status(404).json({ message: 'Course not found' });
     
-    if (course.instructor.toString() !== req.user.userId) {
+    if (course.userId !== req.user.userId) {
       return res.status(401).json({ message: 'Not authorized' });
     }
 
-    await Quiz.deleteMany({ courseId: req.params.id });
-    await course.deleteOne();
-    res.json({ message: 'Course and associated quizzes removed' });
+    // Delete associated quizzes and progress
+    await prisma.quiz.deleteMany({ where: { userId: req.user.userId } });
+    await prisma.progress.deleteMany({ where: { courseId: req.params.id } });
+    
+    // Delete course
+    await prisma.course.delete({
+      where: { id: req.params.id }
+    });
+    
+    res.json({ message: 'Course and associated data removed successfully' });
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Delete course error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };

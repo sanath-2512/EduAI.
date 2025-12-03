@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
@@ -7,6 +7,7 @@ const path = require('path');
 dotenv.config();
 
 const app = express();
+const prisma = new PrismaClient();
 
 // CORS Configuration
 const corsOptions = {
@@ -20,10 +21,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.DATABASE_URL || process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.error('MongoDB Connection Error:', err));
+// Connect to MongoDB via Prisma
+prisma.$connect()
+  .then(() => console.log('✅ Prisma connected to MongoDB'))
+  .catch(err => console.error('❌ Prisma Connection Error:', err));
 
 // API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -45,10 +46,29 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
   if (process.env.NODE_ENV === 'production') {
-    console.log('Serving frontend from backend');
+    console.log('🌐 Serving frontend from backend');
   }
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('\n🛑 Shutting down gracefully...');
+  await prisma.$disconnect();
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGTERM', async () => {
+  console.log('\n🛑 SIGTERM received, shutting down...');
+  await prisma.$disconnect();
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
+  });
 });

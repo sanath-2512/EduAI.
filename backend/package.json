@@ -10,6 +10,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build-frontend": "cd ../frontend/EduAi && npm install && npm run build",
+    "build": "npm run build-frontend",
     "start:prod": "NODE_ENV=production node index.js",
     "deploy": "npm run build-frontend && npm run start:prod"
   },
@@ -28,7 +29,6 @@
     "groq-sdk": "^0.37.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^7.0.0",
-    "mongoose": "^8.19.3",
     "nodemon": "^3.1.11",
     "prisma": "^6.19.0"
   },

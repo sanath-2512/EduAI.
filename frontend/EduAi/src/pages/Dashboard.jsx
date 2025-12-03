@@ -50,8 +50,15 @@ const Dashboard = () => {
           
           // Calculate completion percentage
           let completionPercentage = 0;
-          if (course.content && course.content.length > 0) {
-            const totalLessons = course.content.reduce((acc, module) => {
+          
+          // Normalize content for calculation
+          let contentArray = course.content;
+          if (course.content && !Array.isArray(course.content) && course.content.modules) {
+            contentArray = course.content.modules;
+          }
+          
+          if (contentArray && Array.isArray(contentArray) && contentArray.length > 0) {
+            const totalLessons = contentArray.reduce((acc, module) => {
               return acc + (module.lessons ? module.lessons.length : 0);
             }, 0);
             const completedLessons = progress.completedLessons?.length || 0;
@@ -238,7 +245,7 @@ const Dashboard = () => {
                 })()}
                 
                 <div className="mt-4 flex justify-between items-center text-sm text-gray-500">
-                  <span>{course.content.length} Modules</span>
+                  <span>{(course.content?.modules?.length || course.content?.length || 0)} Modules</span>
                   <span>{new Date(course.createdAt).toLocaleDateString()}</span>
                 </div>
               </Link>

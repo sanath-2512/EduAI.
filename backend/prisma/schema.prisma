@@ -8,9 +8,48 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  username  String   @unique
-  email     String   @unique
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  username  String     @unique
+  email     String     @unique
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime   @default(now())
+  courses   Course[]
+  quizzes   Quiz[]
+  progress  Progress[]
+}
+
+model Course {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  topic       String
+  description String?
+  content     Json
+  userId      String     @db.ObjectId
+  user        User       @relation(fields: [userId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  progress    Progress[]
+}
+
+model Quiz {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  topic     String
+  questions Json
+  userId    String     @db.ObjectId
+  user      User       @relation(fields: [userId], references: [id])
+  createdAt DateTime   @default(now())
+  progress  Progress[]
+}
+
+model Progress {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  courseId  String?  @db.ObjectId
+  course    Course?  @relation(fields: [courseId], references: [id])
+  quizId    String?  @db.ObjectId
+  quiz      Quiz?    @relation(fields: [quizId], references: [id])
+  score     Int?
+  completed Boolean  @default(false)
+  updatedAt DateTime @updatedAt
 }

@@ -211,6 +211,7 @@ select {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -221,6 +222,7 @@ select {
     transform: translateY(30px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -232,6 +234,7 @@ select {
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -239,19 +242,25 @@ select {
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
+
   50% {
     transform: translateY(-20px) rotate(5deg);
   }
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.5;
     transform: scale(1.1);
@@ -277,7 +286,8 @@ select {
 }
 
 /* Ensure proper layout */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -320,11 +330,11 @@ html, body {
 }
 
 /* Ensure proper spacing */
-.space-y-2 > * + * {
+.space-y-2>*+* {
   margin-top: 0.5rem;
 }
 
-.space-y-4 > * + * {
+.space-y-4>*+* {
   margin-top: 1rem;
 }
 

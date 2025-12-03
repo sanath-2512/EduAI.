@@ -1,23 +1,34 @@
-const mongoose = require('mongoose');
+```javascript
+const { PrismaClient } = require('@prisma/client');
 require('dotenv').config();
+
+const prisma = new PrismaClient();
 
 const clearData = async () => {
   try {
-    await mongoose.connect(process.env.DATABASE_URL || process.env.MONGO_URI);
-    console.log('Connected to MongoDB...');
+    console.log('🗑️ Clearing all data...');
+    
+    // Delete in order to respect foreign key constraints (though MongoDB doesn't enforce them strictly, it's good practice)
+    await prisma.progress.deleteMany({});
+    console.log('✅ Progress cleared');
+    
+    await prisma.quiz.deleteMany({});
+    console.log('✅ Quizzes cleared');
+    
+    await prisma.course.deleteMany({});
+    console.log('✅ Courses cleared');
+    
+    await prisma.user.deleteMany({});
+    console.log('✅ Users cleared');
 
-    // Clear all collections
-    await mongoose.connection.collection('users').deleteMany({});
-    await mongoose.connection.collection('courses').deleteMany({});
-    await mongoose.connection.collection('quizzes').deleteMany({});
-    await mongoose.connection.collection('progresses').deleteMany({});
-
-    console.log('✅ All data cleared successfully!');
-    process.exit(0);
+    console.log('✨ Database successfully cleared!');
   } catch (err) {
-    console.error('Error clearing data:', err);
-    process.exit(1);
+    console.error('❌ Error clearing data:', err);
+  } finally {
+    await prisma.$disconnect();
+    process.exit();
   }
 };
 
 clearData();
+```

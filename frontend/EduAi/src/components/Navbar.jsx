@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { GraduationCap, User, LogOut, Menu, X, Settings, Youtube } from 'lucide-react';
+import { GraduationCap, User, LogOut, Menu, X, Settings, Youtube, Award } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -38,6 +38,9 @@ const Navbar = () => {
             <>
               <Link to="/dashboard" className="nav-link" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
               <Link to="/create-course" className="nav-link" onClick={() => setIsMenuOpen(false)}>Create Course</Link>
+              <Link to="/quizzes" className="nav-link" onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <Award size={18} /> Quizzes
+              </Link>
               <Link to="/playlist" className="nav-link" onClick={() => setIsMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                 <Youtube size={18} /> Playlists
               </Link>
