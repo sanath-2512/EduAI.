@@ -9,8 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build-frontend": "cd ../frontend/EduAi && npm install && npm run build",
-    "build": "npm run build-frontend",
+    "build-frontend": "echo 'Skipping frontend build for API-only mode'",
+    "build": "echo 'No build step required'",
     "start:prod": "NODE_ENV=production node index.js",
     "deploy": "npm run build-frontend && npm run start:prod"
   },
