@@ -186,13 +186,11 @@ Create a complete course on any topic following this EXACT structure. Do NOT ski
 }
 
 IMPORTANT:
-- Create 4-6 modules with DIFFERENT structures and themes:
+- Create 3-4 modules with DIFFERENT structures and themes:
   * Module 1: "Getting Started" - Foundation concepts, basics
   * Module 2: "Core Concepts" - Main principles, building blocks
   * Module 3: "Advanced Techniques" - Deeper dive, complex topics
   * Module 4: "Real-World Applications" - Practical use cases, industry examples
-  * Module 5: "Mastery & Optimization" - Best practices, advanced strategies
-  * Module 6: "Capstone & Projects" - Final projects, integration
   
 - Each module should have 2-4 lessons with VARIED content:
   * Mix of theoretical and practical lessons
@@ -201,8 +199,8 @@ IMPORTANT:
   
 - Each lesson MUST include all 9 sections but vary the emphasis:
   * Some lessons emphasize examples, others emphasize theory
-  * Vary the number of exercises (8-12 per lesson)
-  * Vary the number of practical examples (5-10 per lesson)
+  * Vary the number of exercises (5-8 per lesson)
+  * Vary the number of practical examples (3-5 per lesson)
   
 - Make modules visually distinct with different:
   * Module titles that reflect their unique purpose
@@ -248,6 +246,7 @@ Make the entire course clean, structured, extremely clear, and easy to understan
       ],
       model: "llama-3.3-70b-versatile",
       temperature: 0.5,
+      max_tokens: 8000,
       response_format: { type: "json_object" }
     });
 
