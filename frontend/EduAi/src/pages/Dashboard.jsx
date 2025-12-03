@@ -44,8 +44,8 @@ const Dashboard = () => {
       
       for (const course of res.data.courses) {
         try {
-          const progressRes = await api.get(`/progress/${course._id}`);
-          const progress = progressRes.data;
+          const progressRes = await api.get('/progress', { params: { courseId: course._id } });
+          const progress = progressRes.data[0] || {};
           progressMap[course._id] = progress;
           
           // Calculate completion percentage
